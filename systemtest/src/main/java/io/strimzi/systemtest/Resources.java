@@ -37,12 +37,15 @@ import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.fabric8.kubernetes.client.dsl.MixedOperation;
 import io.fabric8.openshift.client.OpenShiftClient;
 import io.strimzi.api.kafka.model.DoneableKafka;
+import io.strimzi.api.kafka.model.DoneableKafkaBridge;
 import io.strimzi.api.kafka.model.DoneableKafkaConnect;
 import io.strimzi.api.kafka.model.DoneableKafkaConnectS2I;
 import io.strimzi.api.kafka.model.DoneableKafkaMirrorMaker;
 import io.strimzi.api.kafka.model.DoneableKafkaTopic;
 import io.strimzi.api.kafka.model.DoneableKafkaUser;
 import io.strimzi.api.kafka.model.Kafka;
+import io.strimzi.api.kafka.model.KafkaBridge;
+import io.strimzi.api.kafka.model.KafkaBridgeBuilder;
 import io.strimzi.api.kafka.model.KafkaBuilder;
 import io.strimzi.api.kafka.model.KafkaConnect;
 import io.strimzi.api.kafka.model.KafkaConnectBuilder;
@@ -129,6 +132,13 @@ public class Resources extends AbstractResources {
                     waitForDeletion((KafkaMirrorMaker) resource);
                 });
                 break;
+            case KafkaBridge.RESOURCE_KIND:
+                resources.add(() -> {
+                    LOGGER.info("Deleting {} {}", resource.getKind(), resource.getMetadata().getName());
+                    x.inNamespace(resource.getMetadata().getNamespace()).delete(resource);
+                    waitForDeletion((KafkaBridge) resource);
+                });
+                break;
             case DEPLOYMENT:
                 resources.push(() -> {
                     LOGGER.info("Deleting {} {}", resource.getKind(), resource.getMetadata().getName());
@@ -181,6 +191,10 @@ public class Resources extends AbstractResources {
 
     private KafkaMirrorMaker deleteLater(KafkaMirrorMaker resource) {
         return deleteLater(kafkaMirrorMaker(), resource);
+    }
+
+    private KafkaBridge deleteLater(KafkaBridge resource) {
+        return deleteLater(kafkaBridge(), resource);
     }
 
     private KafkaTopic deleteLater(KafkaTopic resource) {
@@ -486,6 +500,13 @@ public class Resources extends AbstractResources {
         return kafkaMirrorMaker;
     }
 
+    private KafkaBridge waitFor(KafkaBridge kafkaBridge) {
+        LOGGER.info("Waiting for Kafka Bridge {}", kafkaBridge.getMetadata().getName());
+        StUtils.waitForDeploymentReady(kafkaBridge.getMetadata().getName() + "-connect", kafkaBridge.getSpec().getReplicas());
+        LOGGER.info("Kafka Bridge {} is ready", kafkaBridge.getMetadata().getName());
+        return kafkaBridge;
+    }
+
     private Deployment waitFor(Deployment deployment) {
         LOGGER.info("Waiting for deployment {}", deployment.getMetadata().getName());
         StUtils.waitForDeploymentReady(deployment.getMetadata().getName(), deployment.getSpec().getReplicas());
@@ -526,6 +547,14 @@ public class Resources extends AbstractResources {
 
         client().listPods().stream()
                 .filter(p -> p.getMetadata().getName().startsWith(kafkaMirrorMaker.getMetadata().getName() + "-mirror-maker-"))
+                .forEach(p -> waitForPodDeletion(p.getMetadata().getName()));
+    }
+
+    private void waitForDeletion(KafkaBridge kafkaBridge) {
+        LOGGER.info("Waiting when all the pods are terminated for Kafka Bridge {}", kafkaBridge.getMetadata().getName());
+
+        client().listPods().stream()
+                .filter(p -> p.getMetadata().getName().startsWith(kafkaBridge.getMetadata().getName() + "-bridge-"))
                 .forEach(p -> waitForPodDeletion(p.getMetadata().getName()));
     }
 
@@ -629,7 +658,7 @@ public class Resources extends AbstractResources {
     }
 
     DoneableDeployment clusterOperator(String namespace, String operationTimeout) {
-        return createNewDeployment(defaultCLusterOperator(namespace, operationTimeout).build());
+        return createNewDeployment(defaultCLusterOperator(namespace, operationTimeout).build(), namespace);
     }
 
     DeploymentBuilder defaultCLusterOperator(String namespace, String operationTimeout) {
@@ -684,7 +713,7 @@ public class Resources extends AbstractResources {
                 .endSpec();
     }
 
-    DoneableDeployment createNewDeployment(Deployment deployment) {
+    DoneableDeployment createNewDeployment(Deployment deployment, String namespace) {
         return new DoneableDeployment(deployment, co -> {
             TestUtils.waitFor("Deployment creation", Constants.POLL_INTERVAL_FOR_RESOURCE_CREATION, Constants.TIMEOUT_FOR_RESOURCE_CREATION,
                 () -> {
@@ -819,11 +848,14 @@ public class Resources extends AbstractResources {
         return new DoneableKubernetesClusterRoleBinding(clusterRoleBinding);
     }
 
-    DoneableDeployment deployKafkaClients(String clusterName) {
-        return deployKafkaClients(false, clusterName, null);
+    DoneableDeployment deployKafkaClients(String clusterName, String namespace) {
+        return deployKafkaClients(false, clusterName, namespace, null);
     }
 
-    DoneableDeployment deployKafkaClients(boolean tlsListener, String clusterName, KafkaUser... kafkaUsers) {
+    DoneableDeployment deployKafkaClients(boolean tlsListener, String clusterName, String namespace) {
+        return deployKafkaClients(tlsListener, clusterName, namespace, null);
+    }
+    DoneableDeployment deployKafkaClients(boolean tlsListener, String clusterName, String namespace, KafkaUser... kafkaUsers) {
         Deployment kafkaClient = new DeploymentBuilder()
             .withNewMetadata()
                 .withName(clusterName + "-" + Constants.KAFKA_CLIENTS)
@@ -842,10 +874,10 @@ public class Resources extends AbstractResources {
             .endSpec()
             .build();
 
-        return createNewDeployment(kafkaClient);
+        return createNewDeployment(kafkaClient, namespace);
     }
 
-    private static Service getSystemtestsServiceResource(String appName, int port) {
+    protected static Service getSystemtestsServiceResource(String appName, int port) {
         return new ServiceBuilder()
             .withNewMetadata()
                 .withName(appName)
@@ -862,8 +894,7 @@ public class Resources extends AbstractResources {
             .build();
     }
 
-    DoneableService createServiceResource(String appName, int port, String clientNamespace) {
-        Service service = getSystemtestsServiceResource(appName, port);
+    DoneableService createServiceResource(Service service, String clientNamespace) {
         LOGGER.info("Creating service {} in namespace {}", service.getMetadata().getName(), clientNamespace);
         client().createService(service);
         deleteLater(service);
@@ -908,11 +939,11 @@ public class Resources extends AbstractResources {
                 .withName(Constants.KAFKA_CLIENTS)
                 .withImage(Environment.TEST_CLIENT_IMAGE)
                 .addNewPort()
-                    .withContainerPort(4242)
+                    .withContainerPort(Environment.KAFKA_CLIENTS_DEFAULT_PORT)
                 .endPort()
                 .withNewLivenessProbe()
                     .withNewTcpSocket()
-                    .withNewPort(4242)
+                    .withNewPort(Environment.KAFKA_CLIENTS_DEFAULT_PORT)
                         .endTcpSocket()
                     .withInitialDelaySeconds(10)
                     .withPeriodSeconds(5)
@@ -1059,5 +1090,43 @@ public class Resources extends AbstractResources {
             return envVar.get().getValue();
         }
         return "";
+    }
+
+    DoneableKafkaBridge kafkaBridge(String name, String bootstrap, int kafkaBridgeReplicas, int port) {
+        return kafkaBridge(defaultKafkaBridge(name, bootstrap, kafkaBridgeReplicas, port).build());
+    }
+
+    private KafkaBridgeBuilder defaultKafkaBridge(String name, String bootstrap, int replicas, int port) {
+        return new KafkaBridgeBuilder()
+                .withMetadata(new ObjectMetaBuilder().withName(name).withNamespace(client().getNamespace()).build())
+                .withNewSpec()
+                .withBootstrapServers(bootstrap)
+                .withReplicas(replicas)
+                .withNewHttp(port)
+                .withResources(new ResourceRequirementsBuilder()
+                        .addToRequests("memory", new Quantity("1G")).build())
+                .withMetrics(new HashMap<>())
+                .endSpec();
+    }
+
+    private DoneableKafkaBridge kafkaBridge(KafkaBridge kafkaBridge) {
+        return new DoneableKafkaBridge(kafkaBridge, kC -> {
+            TestUtils.waitFor("KafkaBridge creation", Constants.POLL_INTERVAL_FOR_RESOURCE_CREATION, Constants.TIMEOUT_FOR_RESOURCE_CREATION,
+                () -> {
+                    try {
+                        kafkaBridge().inNamespace(client().getNamespace()).createOrReplace(kC);
+                        return true;
+                    } catch (KubernetesClientException e) {
+                        if (e.getMessage().contains("object is being deleted")) {
+                            return false;
+                        } else {
+                            throw e;
+                        }
+                    }
+                }
+            );
+            return waitFor(deleteLater(
+                    kC));
+        });
     }
 }
