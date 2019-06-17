@@ -27,8 +27,6 @@ velocity.log
 documentation/html/**
 documentation/htmlnoheader/**
 documentation/book/build/**
-documentation/kubernetes/**
-documentation/openshift/**
 master.html
 
 helm-charts/strimzi-kafka-operator-*.*.*.tgz
