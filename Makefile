@@ -93,47 +93,137 @@ helm_pkg:
 	mv strimzi-kafka-operator-$(CHART_SEMANTIC_RELEASE_VERSION).tgz strimzi-kafka-operator-helm-chart-$(CHART_SEMANTIC_RELEASE_VERSION).tgz
 	rm -rf strimzi-$(RELEASE_VERSION)/charts/
 
-docu_versions:
+.PHONY: docu_versions
+docu_versions: documentation/*.sh kafka-versions
 	documentation/snip-kafka-versions.sh kafka-versions > documentation/book/snip-kafka-versions.adoc
 	documentation/version-dependent-attrs.sh kafka-versions > documentation/book/common/version-dependent-attrs.adoc
 	documentation/snip-images.sh kafka-versions > documentation/book/snip-images.adoc
 
-docu_html: docu_htmlclean docu_versions docu_check
-	mkdir -p documentation/html
-	$(CP) -vrL documentation/book/images documentation/html/images
-	asciidoctor -v --failure-level WARN -t -dbook -a ProductVersion=$(RELEASE_VERSION) -a GithubVersion=$(GITHUB_VERSION) documentation/book/master.adoc -o documentation/html/index.html
-	asciidoctor -v --failure-level WARN -t -dbook -a ProductVersion=$(RELEASE_VERSION) -a GithubVersion=$(GITHUB_VERSION) documentation/contributing/master.adoc -o documentation/html/contributing.html
+generated_docs := documentation/book/snip-kafka-versions.adoc \
+  documentation/book/common/version-dependent-attrs.adoc \
+  documentation/book/snip-images.adoc
 
+documentation/book/snip-kafka-versions.adoc: documentation/snip-kafka-versions.sh kafka-versions
+	documentation/snip-kafka-versions.sh kafka-versions > documentation/book/snip-kafka-versions.adoc
 
-docu_htmlnoheader: docu_htmlnoheaderclean docu_versions docu_check
-	mkdir -p documentation/htmlnoheader
-	$(CP) -vrL documentation/book/images documentation/htmlnoheader/images
-	asciidoctor -v --failure-level WARN -t -dbook -a ProductVersion=$(RELEASE_VERSION) -a GithubVersion=$(GITHUB_VERSION) -s documentation/book/master.adoc -o documentation/htmlnoheader/master.html
-	asciidoctor -v --failure-level WARN -t -dbook -a ProductVersion=$(RELEASE_VERSION) -a GithubVersion=$(GITHUB_VERSION) -s documentation/contributing/master.adoc -o documentation/htmlnoheader/contributing.html
+documentation/book/common/version-dependent-attrs.adoc: documentation/version-dependent-attrs.sh kafka-versions
+	documentation/version-dependent-attrs.sh kafka-versions > documentation/book/common/version-dependent-attrs.adoc
 
-docu_check:
+documentation/book/snip-images.adoc: documentation/snip-images.sh kafka-versions
+	documentation/snip-images.sh kafka-versions > documentation/book/snip-images.adoc
+
+.docu_check: $(generated_docs)
 	./.travis/check_docs.sh
+	touch .docu_check
+
+doc_src := $(shell find documentation/book documentation/common -type f)
+
+# $(call asciidoctor,platform,adoc_file,output_file,extra_options)
+define asciidoctor
+  mkdir -p $$(dirname "$3")
+  $(CP) -vrL documentation/book/images $$(dirname "$3")/images
+  asciidoctor -v --failure-level ERROR -t -dbook \
+  -a "platform=$1" \
+  -a ProductVersion=$(RELEASE_VERSION) \
+  -a GithubVersion=$(GITHUB_VERSION) \
+  $4 "$2" -o "$3"
+  @ if grep -Er --include='*.html' '{cmdcli}' $@; then \
+    echo "ERROR: Found non-substituted attribute '{cmdcli}' in doc (see above)" ; \
+    echo '       Maybe subs="attributes+" is what you need?' ; \
+    touch $< ; \
+    false ; \
+  fi
+endef
+
+documentation/html/index.html: $(doc_src)
+# Combined doc
+	#./.travis/check_docs.sh
+	$(call asciidoctor,combined,documentation/book/master.adoc,$@)
+
+documentation/htmlnoheader/index.html: $(doc_src)
+# Combined doc
+	#./.travis/check_docs.sh
+	$(call asciidoctor,combined,documentation/book/master.adoc,$@,-s)
+
+documentation/kubernetes/index.html: $(doc_src)
+# Kubernetes-specific doc
+	#./.travis/check_docs.sh
+	$(call asciidoctor,kubernetes,documentation/book/master.adoc,$@)
+# Check rendered kubernetes doc for Openshift-isms:
+# Avoid use of oc in the kube doc
+	@ if grep -Er --include='*.html' '(^|[^a-zA-Z0-9])oc[^a-zA-Z0-9]' $@; then \
+	  echo "ERROR: Found 'oc' in kubernetes doc (see above)" ; \
+	  echo "       Maybe '{cmdcli}' is what you need?" ; \
+	  echo "       Or 'ifdef::OpenShift[]'/'endif::[]' perhaps?" ; \
+	  touch $< ; \
+	  false ; \
+	fi
+# Prevent openshift in the kube doc too, except for api groups mentioned in the ClusterRoles
+#	 TODO This doesn't quite work because:
+#	 1) Currently some metrics examples are in a directory with openshift in the name
+#	 2) The generated API docs talk about OpenShift things
+#	grep -wri --include='*.html' 'OpenShift' documentation/kubernetes/ | \
+#	  grep -Ev '(apps|build|image|route)\.openshift.io' \
+#	  && echo -e "ERROR: Found 'OpenShift' in kubernetes doc (see above).\n" \
+#	             "      Either use '{cmdcli}' or enclose between 'ifdef::OpenShift[]' and 'endif::[]'." \
+#	  && touch documentation/book/master.adoc
+#	  || echo "No 'OpenShift' in kubernetes doc (good)"
+
+documentation/openshift/index.html: $(doc_src)
+# OpenShift-specific doc
+	#./.travis/check_docs.sh
+	$(call asciidoctor,openshift,documentation/book/master.adoc,$@)
+# Check rendered openshift doc for Kubernetes-isms:
+# mention of Kubernetes is OK, but there should be no need for kubectl commands
+# but we allow kubectl in urls
+	@ if grep -Er --include='*.html' '(^|[^a-zA-Z0-9])kubectl[^a-zA-Z0-9]' $@ |\
+	  grep -Ev 'https?://[:/.a-zA-Z0-9-]*kubectl'; then \
+	  echo "ERROR: Found 'kubectl' in openshift doc (see above)." ;\
+	  echo "       Either use '{cmdcli}' or enclose between 'ifdef::Kubernetes[]' and 'endif::[]'." ;\
+	  touch $< ;\
+	  false; \
+	fi
+
+contributing_src:=$(shell find documentation/contributing)
+documentation/html/contributing.html: .docu_check $(contributing_src)
+# Contributing guide
+	asciidoctor -v --failure-level WARN -t -dbook \
+	-a ProductVersion=$(RELEASE_VERSION) \
+	-a GithubVersion=$(GITHUB_VERSION) \
+	documentation/contributing/master.adoc -o $@
+
+documentation/htmlnoheader/contributing.html: .docu_check $(contributing_src)
+	asciidoctor -v --failure-level WARN -t -dbook \
+	-a ProductVersion=$(RELEASE_VERSION) \
+	-a GithubVersion=$(GITHUB_VERSION) \
+	-s \
+	documentation/contributing/master.adoc -o $@
+
+.PHONY: docu_html
+docu_html: documentation/html/index.html documentation/htmlnoheader/index.html \
+  documentation/kubernetes/index.html documentation/openshift/index.html \
+  documentation/html/contributing.html documentation/htmlnoheader/contributing.html
 
 findbugs: $(SUBDIRS)
 
-docu_pushtowebsite: docu_htmlnoheader docu_html
+docu_pushtowebsite: docu_html
 	./.travis/docu-push-to-website.sh
 
 pushtonexus:
 	./.travis/push-to-nexus.sh
 
-release_docu: docu_html docu_htmlnoheader
+.PHONY: release_docu
+release_docu: docu_html
 	mkdir -p strimzi-$(RELEASE_VERSION)/docs
 	$(CP) -rv documentation/html/index.html strimzi-$(RELEASE_VERSION)/docs/
 	$(CP) -rv documentation/html/images/ strimzi-$(RELEASE_VERSION)/docs/images/
 
-docu_clean: docu_htmlclean docu_htmlnoheaderclean
+.PHONY: docu_clean
+docu_clean: docu_htmlclean
 
+.PHONY: docu_htmlclean
 docu_htmlclean:
-	rm -rf documentation/html
-
-docu_htmlnoheaderclean:
-	rm -rf documentation/htmlnoheader
+	rm -rf .docu_check documentation/html documentation/htmlnoheader documentation/kubernetes documentation/openshift
 
 systemtests:
 	./systemtest/scripts/run_tests.sh $(SYSTEMTEST_ARGS)
@@ -145,4 +235,4 @@ crd_install: install
 $(SUBDIRS):
 	$(MAKE) -C $@ $(MAKECMDGOALS)
 
-.PHONY: all $(SUBDIRS) $(DOCKER_TARGETS) systemtests docu_versions findbugs docu_check
+.PHONY: all $(SUBDIRS) $(DOCKER_TARGETS) systemtests findbugs
