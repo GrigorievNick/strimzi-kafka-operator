@@ -2,11 +2,14 @@
 //
 // assembly-cluster-operator.adoc
 
-[id='deploying-cluster-operator-kubernetes-{context}']
+[id='deploying-cluster-operator-{context}']
 = Deploying the Cluster Operator to {KubernetesName}
 
 .Prerequisites
 
+ifdef::OpenShift[]
+* A user with `cluster-admin` role needs to be used, for example, `system:admin`.
+endif::[]
 * Modify the installation files according to the namespace the Cluster Operator is going to be installed in.
 +
 include::frag-cluster-operator-namespace-sed.adoc[]
@@ -15,7 +18,6 @@ include::frag-cluster-operator-namespace-sed.adoc[]
 
 * Deploy the Cluster Operator:
 +
-[source]
-----
-kubectl apply -f install/cluster-operator -n _my-namespace_
-----
+[source,shell,subs="+quotes,attributes+"]
+{cmdcli} apply -f install/cluster-operator -n _my-{namespace}_
+

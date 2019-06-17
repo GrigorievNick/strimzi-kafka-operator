@@ -9,9 +9,9 @@
 
 In this document, replaceable text is styled in monospace and italics.
 
-For example, in the following code, you will want to replace `_my-namespace_` with the name of your namespace:
+For example, in the following code, you will want to replace `_my-{namespace}_` with the name of your {namespace}:
 
-[source, subs="+quotes"]
+[source, subs="+quotes,attributes+"]
 ----
-sed -i 's/namespace: .\*/namespace: _my-namespace_/' install/cluster-operator/*RoleBinding*.yaml
+sed -i 's/namespace: .\*/namespace: _my-{namespace}_/' install/cluster-operator/*RoleBinding*.yaml
 ----

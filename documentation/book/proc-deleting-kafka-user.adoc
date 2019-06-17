@@ -17,17 +17,10 @@ This procedure describes how to delete a Kafka user created with `KafkaUser` {Pr
 
 * Delete the `KafkaUser` resource in {ProductPlatformName}.
 +
-ifdef::Kubernetes[]
-On {KubernetesName} this can be done using `kubectl`:
+This can be done using `{cmdcli} delete`:
 +
-[source,shell,subs=+quotes]
-kubectl delete kafkauser _your-user-name_
-+
-endif::Kubernetes[]
-On {OpenShiftName} this can be done using `oc`:
-+
-[source,shell,subs=+quotes]
-oc delete kafkauser _your-user-name_
+[source,shell,subs="+quotes,attributes+"]
+{cmdcli} delete kafkauser _your-user-name_
 
 .Additional resources
 

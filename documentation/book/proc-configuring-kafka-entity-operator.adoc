@@ -7,7 +7,7 @@
 
 .Prerequisites
 
-* An {ProductPlatformName} cluster
+* {AProductPlatformName} cluster
 * A running Cluster Operator
 
 .Procedure
@@ -37,13 +37,6 @@ spec:
 +
 . Create or update the resource.
 +
-ifdef::Kubernetes[]
-On {KubernetesName} this can be done using `kubectl apply`:
-[source,shell,subs=+quotes]
-kubectl apply -f _your-file_
-+
-endif::Kubernetes[]
-On {OpenShiftName} this can be done using `oc apply`:
-+
-[source,shell,subs=+quotes]
-oc apply -f _your-file_
+This can be done using `{cmdcli} apply`:
+[source,shell,subs="+quotes,attributes+"]
+{cmdcli} apply -f _your-file_

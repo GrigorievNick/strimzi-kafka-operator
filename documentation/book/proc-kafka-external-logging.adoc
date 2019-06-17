@@ -14,13 +14,7 @@ Remember to place your custom ConfigMap under the `log4j.properties` or `log4j2.
 +
 . Create or update the Kafka resource in {ProductPlatformName}.
 +
-ifdef::Kubernetes[]
-On {KubernetesName} this can be done using `kubectl apply`:
-[source,shell,subs=+quotes]
-kubectl apply -f _your-file_
-+
-endif::Kubernetes[]
-On {OpenShiftName} this can be done using `oc apply`:
-+
-[source,shell,subs=+quotes]
-oc apply -f _your-file_
+This can be done using `{cmdcli} apply`:
+[source,shell,subs="+quotes,attributes+"]
+{cmdcli} apply -f _your-file_
+

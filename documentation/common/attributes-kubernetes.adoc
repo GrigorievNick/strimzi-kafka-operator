@@ -1,0 +1,36 @@
+
+
+// :namespace: controls the CLI command
+:cmdcli: kubectl
+// :namespace: controls the word used for namespace in
+:namespace: namespace
+
+// Name and version placeholders
+:ProductLongName: Strimzi
+:ProductName: Strimzi
+:ContextProduct: strimzi
+:OpenShiftName: OpenShift
+:OpenShiftLongName: OpenShift Origin
+:OpenShiftVersion: 3.9 and later
+:KubernetesVersion: 1.9 and later
+:KubernetesName: Kubernetes
+:KubernetesLongName: Kubernetes
+:ProductPlatformName: {KubernetesName}
+:ProductPlatformLongName: {KubernetesLongName}
+:AProductPlatformName: A {KubernetesName}
+:_aProductPlatformName: a {KubernetesName}
+:PlatformNameNamespace: {KubernetesName} namespace
+:PlatformNameNamespaces: {KubernetesName} namespaces
+:_aPlatformNameNamespace: a {KubernetesName} namespace
+:APlatformNameNamespace: A {KubernetesName} namespace
+
+// Section enablers
+:Kubernetes:
+//:OpenShift:
+:Helm:
+:OperatorHubio:
+:StrimziUpgrades:
+:InstallationAppendix:
+:MetricsAppendix:
+:Downloading:
+:SecurityImg:

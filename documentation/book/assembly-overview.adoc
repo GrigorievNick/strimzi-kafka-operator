@@ -13,9 +13,9 @@
 
 {ProductName} provides three operators:
 
-Cluster Operator:: Responsible for deploying and managing Apache Kafka clusters within an {ProductPlatformName} cluster.
-Topic Operator:: Responsible for managing Kafka topics within a Kafka cluster running within an {ProductPlatformName} cluster.
-User Operator:: Responsible for managing Kafka users within a Kafka cluster running within an {ProductPlatformName} cluster.
+Cluster Operator:: Responsible for deploying and managing Apache Kafka clusters within {_aProductPlatformName} cluster.
+Topic Operator:: Responsible for managing Kafka topics within a Kafka cluster running within {_aProductPlatformName} cluster.
+User Operator:: Responsible for managing Kafka users within a Kafka cluster running within {_aProductPlatformName} cluster.
 
 .Operators within the {ProductName} architecture
 

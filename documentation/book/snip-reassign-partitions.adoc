@@ -10,7 +10,8 @@ cat _reassignment.json_ | \
   'cat > /tmp/reassignment.json'
 ----
 +
-endif::Kubernetes[]
+endif::[]
+ifdef::OpenShift[]
 On {OpenShiftName}:
 +
 [source,shell,subs=+quotes]
@@ -20,6 +21,18 @@ cat _reassignment.json_ | \
   'cat > /tmp/reassignment.json'
 ----
 +
+endif::[]
+ifdef::Kubernetes[]
+For example:
++
+[source,shell,subs=+quotes]
+----
+cat _reassignment.json_ | \
+  kubectl exec my-cluster-kafka-0 -c kafka -i -- /bin/bash -c \
+  'cat > /tmp/reassignment.json'
+----
+endif::[]
+ifndef::Kubernetes[]
 For example:
 +
 [source,shell,subs=+quotes]
@@ -28,6 +41,7 @@ cat reassignment.json | \
   oc rsh -c kafka my-cluster-kafka-0 /bin/bash -c \
   'cat > /tmp/reassignment.json'
 ----
+endif::[]
 
 . Execute the partition reassignment using the `kafka-reassign-partitions.sh` command line tool from the same broker pod.
 +
@@ -42,7 +56,8 @@ kubectl exec _broker-pod_ -c kafka -it -- \
   --execute
 ----
 +
-endif::Kubernetes[]
+endif::[]
+ifdef::OpenShift[]
 On {OpenShiftName}:
 +
 [source,shell,subs=+quotes]
@@ -53,6 +68,7 @@ oc rsh -c kafka _broker-pod_ \
   --execute
 ----
 +
+endif::[]
 If you are going to throttle replication you can also pass the `--throttle` option with an inter-broker throttled rate in bytes per second. For example:
 ifdef::Kubernetes[]
 +
@@ -66,7 +82,8 @@ kubectl exec my-cluster-kafka-0 -c kafka -it -- \
   --throttle 5000000 \
   --execute
 ----
-endif::Kubernetes[]
+endif::[]
+ifdef::OpenShift[]
 +
 On {OpenShiftName}:
 +
@@ -78,6 +95,7 @@ oc rsh -c kafka my-cluster-kafka-0 \
   --throttle 5000000 \
   --execute
 ----
+endif::[]
 +
 This command will print out two reassignment JSON objects. 
 The first records the current assignment for the partitions being moved. 
@@ -97,7 +115,8 @@ kubectl exec my-cluster-kafka-0 -c kafka -it -- \
   --throttle 10000000 \
   --execute
 ----
-endif::Kubernetes[]
+endif::[]
+ifdef::OpenShift[]
 +
 On {OpenShiftName}:
 +
@@ -109,7 +128,7 @@ oc rsh -c kafka my-cluster-kafka-0 \
   --throttle 10000000 \
   --execute
 ----
-
+endif::[]
 
 . Periodically verify whether the reassignment has completed using the `kafka-reassign-partitions.sh` command line tool from any of the broker pods. This is the same command as the previous step but with the `--verify` option instead of the `--execute` option.
 +
@@ -124,7 +143,8 @@ kubectl exec _broker-pod_ -c kafka -it -- \
   --verify
 ----
 +
-endif::Kubernetes[]
+endif::[]
+ifdef::OpenShift[]
 On {OpenShiftName}:
 +
 [source,shell,subs=+quotes]
@@ -134,8 +154,9 @@ oc rsh -c kafka _broker-pod_ \
   --reassignment-json-file /tmp/reassignment.json \
   --verify
 ----
-ifdef::Kubernetes[]
 +
+endif::[]
+ifdef::Kubernetes[]
 For example, on {KubernetesName},
 +
 [source,shell,subs=+quotes]
@@ -145,8 +166,8 @@ kubectl exec my-cluster-kafka-0 -c kafka -it -- \
   --reassignment-json-file /tmp/reassignment.json \
   --verify
 ----
-endif::Kubernetes[]
-+
+endif::[]
+ifndef::Kubernetes[]
 For example, on {OpenShiftName},
 +
 [source,shell,subs=+quotes]
@@ -156,6 +177,7 @@ oc rsh -c kafka my-cluster-kafka-0 \
   --reassignment-json-file /tmp/reassignment.json \
   --verify
 ----
+endif::[]
 
 . The reassignment has finished when the `--verify` command reports each of  the partitions being moved as completed successfully. 
 This final `--verify` will also have the effect of removing any reassignment throttles.

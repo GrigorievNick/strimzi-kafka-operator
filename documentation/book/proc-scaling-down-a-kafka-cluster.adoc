@@ -22,10 +22,19 @@ You can verify this by checking that the broker's data log directory does not co
 If the log directory on the broker contains a directory that does not match the extended regular expression `[a-zA-Z0-9.-]+\.[a-z0-9]+-delete$` then the broker still has live partitions and it should not be stopped.
 +
 You can check this by executing the command:
+ifdef::Kubernetes[]
++
+[source,shell,subs=+quotes]
+kubectl exec my-cluster-kafka-0 -c kafka -it -- \
+  /bin/bash -c \
+  "ls -l /var/lib/kafka/kafka-log_<N>_ | grep -E '^d' | grep -vE '[a-zA-Z0-9.-]+\.[a-z0-9]+-delete$'"
+endif::[]
+ifndef::Kubernetes[]
 +
 [source,shell,subs=+quotes]
 oc rsh _<BrokerN>_ -c kafka /bin/bash -c \
   "ls -l /var/lib/kafka/kafka-log_<N>_ | grep -E '^d' | grep -vE '[a-zA-Z0-9.-]+\.[a-z0-9]+-delete$'"
+endif::[]
 +
 where _N_ is the number of the `Pod(s)` being deleted.
 +

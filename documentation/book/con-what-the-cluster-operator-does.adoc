@@ -9,15 +9,17 @@
 The Cluster Operator is in charge of deploying a Kafka cluster alongside a Zookeeper ensemble.
 As part of the Kafka cluster, it can also deploy the topic operator which provides operator-style topic management via `KafkaTopic` custom resources.
 The Cluster Operator is also able to deploy a Kafka Connect cluster which connects to an existing Kafka cluster.
+ifdef::OpenShift[]
 On {OpenShiftName} such a cluster can be deployed using the Source2Image feature, providing an easy way of including more connectors.
+endif::OpenShift[]
 
 .Example architecture for the Cluster Operator
 
 image:cluster-operator.png[Cluster Operator]
 
 When the Cluster Operator is up, it starts to _watch_ for certain {ProductPlatformName} resources containing the desired Kafka, Kafka Connect, or Kafka Mirror Maker cluster configuration.
-By default, it watches only in the same namespace or project where it is installed.
-The Cluster Operator can be configured to watch for more {Namespaces}.
+By default, it watches only in the same {namespace} where it is installed.
+The Cluster Operator can be configured to watch for more {PlatformNameNamespaces}.
 Cluster Operator watches the following resources:
 
 * A `Kafka` resource for the Kafka cluster.

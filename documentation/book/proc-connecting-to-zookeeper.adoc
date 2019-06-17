@@ -8,7 +8,7 @@ Open a terminal inside a Kafka container to use Kafka CLI tools that require a Z
 
 .Prerequisites
 
-* An {ProductPlatformName} cluster is available.
+* {AProductPlatformName} cluster is available.
 * A kafka cluster is running.
 * The Cluster Operator is running.
 

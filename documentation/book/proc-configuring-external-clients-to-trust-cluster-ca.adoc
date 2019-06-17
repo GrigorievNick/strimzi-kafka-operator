@@ -28,12 +28,14 @@ On {KubernetesName}, run the following command to extract the certificates:
 +
 [source,shell,subs="+quotes"]
 kubectl get secret _<cluster-name>_-cluster-ca-cert -o jsonpath='{.data.ca\.crt}' | base64 -d > ca.crt
-endif::Kubernetes[]
+endif::[]
+ifdef::OpenShift[]
 +
 On {OpenShiftName}, run the following command to extract the certificates:
 +
 [source,shell,subs="+quotes"]
 oc extract secret/_<cluster-name>_-cluster-ca-cert --keys ca.crt
+endif::[]
 
 . The Kafka client has to be configured to trust certificates signed by this CA.
 For the Java-based Kafka Producer, Consumer, and Streams APIs, you can do this by importing the CA certificates into the JVM's truststore using the following `keytool` command:

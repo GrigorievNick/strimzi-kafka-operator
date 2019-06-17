@@ -37,26 +37,25 @@ listeners:
 
 == External listener
 
-The external listener is used to connect to a Kafka cluster from outside of an {ProductPlatformName} environment.
-{ProductName} supports three types of external listeners:
+The external listener is used to connect to a Kafka cluster from outside of {_aProductPlatformName} environment.
+{ProductName} supports the following types of external listener:
 
+ifdef::OpenShift[]
 * `route`
+endif::OpenShift[]
 * `loadbalancer`
 * `nodeport`
 ifdef::Kubernetes[]
 * `ingress`
 endif::Kubernetes[]
 
+ifdef::OpenShift[]
 === Exposing Kafka using {OpenShiftName} `Routes`
 
 An external listener of type `route` exposes Kafka by using {OpenShiftName} `Routes` and the HAProxy router.
 A dedicated `Route` is created for every Kafka broker pod.
 An additional `Route` is created to serve as a Kafka bootstrap address.
 Kafka clients can use these `Routes` to connect to Kafka on port 443.
-
-ifdef::Kubernetes[]
-NOTE: `Routes` are available only on {OpenShiftName}. External listeners of type `route` cannot be used on {KubernetesName}.
-endif::Kubernetes[]
 
 When exposing Kafka using {OpenShiftName} `Routes`, TLS encryption is always used.
 
@@ -87,6 +86,7 @@ listeners:
 ----
 
 For more information on using `Routes` to access Kafka, see xref:proc-accessing-kafka-using-routes-{context}[].
+endif::OpenShift[]
 
 === Exposing Kafka using loadbalancers
 

@@ -2,9 +2,16 @@
 [[installing_kubernetes_and_openshift_cluster]]
 == Installing {ProductPlatformName} cluster
 
-The easiest way to get started with {ProductPlatformName} is using the `Minikube`, `Minishift` or `oc cluster up`
-utilities. This section provides basic guidance on how to use them. More details are provided on the websites of
-the tools themselves.
+The easiest way to get started with {ProductPlatformName} is using
+ifdef::Kubernetes[`Minikube`]
+ifdef::Kubernetes+OpenShift[, ]
+ifdef::OpenShift[`Minishift` or `oc cluster up`]
+.
+This section provides basic guidance on how to use
+ifndef::OpenShift[it]
+ifdef::OpenShift[them]
+.
+More details are provided on the websites of the tools themselves.
 
 ifdef::Kubernetes[]
 === {KubernetesName}
@@ -22,6 +29,7 @@ Once installed, it can be started using:
 minikube start --memory 4096
 endif::Kubernetes[]
 
+ifdef::OpenShift[]
 === {OpenShiftName}
 
 In order to interact with an {OpenShiftName} cluster, the https://github.com/openshift/origin/releases[`oc`] utility is needed.
@@ -43,3 +51,4 @@ Once installed, `Minishift` can be started using the following command:
 
 [source,shell]
 minishift start --memory 4GB
+endif::[]

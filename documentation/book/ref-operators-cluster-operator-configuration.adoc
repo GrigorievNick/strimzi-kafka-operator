@@ -7,8 +7,8 @@
 
 The Cluster Operator can be configured through the following supported environment variables:
 
-`STRIMZI_NAMESPACE`:: A comma-separated list of {Namespaces} that the operator should operate in.
-When not set, set to empty string, or to `*` the cluster operator will operate in all {Namespaces}.
+`STRIMZI_NAMESPACE`:: A comma-separated list of {PlatformNameNamespaces} that the operator should operate in.
+When not set, set to empty string, or to `*` the cluster operator will operate in all {PlatformNameNamespaces}.
 The Cluster Operator deployment might use the link:https://kubernetes.io/docs/tasks/inject-data-application/downward-api-volume-expose-pod-information/#the-downward-api[{KubernetesName} Downward API^]
 to set this automatically to the namespace the Cluster Operator is deployed in. See the example below:
 +
@@ -57,12 +57,14 @@ The required syntax is whitespace or comma separated `_<version>_=_<image>_` pai
 For example `{KafkaVersionLower}={DockerKafkaImagePrevious}, {KafkaVersionHigher}={DockerKafkaImageCurrent}`.
 This is used when a `KafkaConnect.spec.version` property is specified but not the `KafkaConnect.spec.image`, as described in xref:assembly-configuring-container-images-deployment-configuration-kafka-connect[].
 
-`STRIMZI_KAFKA_CONNECT_S2I_IMAGES`:: Required.
+ifdef::OpenShift[]
+`STRIMZI_KAFKA_CONNECT_S2I_IMAGES`:: Required on {OpenShiftName}
 This provides a mapping from the Kafka version to the corresponding Docker image containing a Kafka connect of that version.
 The required syntax is whitespace or comma separated `_<version>_=_<image>_` pairs.
 For example `{KafkaVersionLower}={DockerKafkaImagePrevious}, {KafkaVersionHigher}={DockerKafkaImageCurrent}`.
 This is used when a `KafkaConnectS2I.spec.version` property is specified but not the `KafkaConnectS2I.spec.image`, as described in xref:assembly-configuring-container-images-deployment-configuration-kafka-connect-s2i[].
 
+endif::[]
 `STRIMZI_KAFKA_MIRROR_MAKER_IMAGES`:: Required.
 This provides a mapping from the Kafka version to the corresponding Docker image containing a Kafka mirror maker of that version.
 The required syntax is whitespace or comma separated `_<version>_=_<image>_` pairs.

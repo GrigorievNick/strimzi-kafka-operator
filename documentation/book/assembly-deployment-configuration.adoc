@@ -14,14 +14,18 @@ This chapter describes how to configure different aspects of the supported deplo
 
 * Kafka clusters
 * Kafka Connect clusters
+ifdef::OpenShift[]
 * Kafka Connect clusters with _Source2Image_ support
+endif::[]
 * Kafka Mirror Maker
 
 include::assembly-deployment-configuration-kafka.adoc[leveloffset=+1]
 
 include::assembly-deployment-configuration-kafka-connect.adoc[leveloffset=+1]
 
+ifdef::OpenShift[]
 include::assembly-deployment-configuration-kafka-connect-s2i.adoc[leveloffset=+1]
+endif::[]
 
 include::assembly-deployment-configuration-kafka-mirror-maker.adoc[leveloffset=+1]
 

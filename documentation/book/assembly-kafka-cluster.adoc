@@ -34,8 +34,5 @@ metadata:
 # ...
 ----
 
-ifdef::Kubernetes[]
-include::proc-deploying-kafka-cluster-kubernetes.adoc[leveloffset=+1]
-endif::Kubernetes[]
+include::proc-deploying-kafka-cluster.adoc[leveloffset=+1]
 
-include::proc-deploying-kafka-cluster-openshift.adoc[leveloffset=+1]

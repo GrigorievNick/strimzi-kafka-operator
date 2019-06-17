@@ -2,10 +2,12 @@
 //
 // assembly-kafka-mirror-maker.adoc
 
-[id='deploying-kafka-mirror-maker-openshift-{context}']
-= Deploying Kafka Mirror Maker to {OpenShiftName}
+[id='deploying-kafka-mirror-maker-{context}']
+= Deploying Kafka Mirror Maker
 
+ifdef::OpenShift[]
 On {OpenShiftName}, Kafka Mirror Maker is provided in the form of a template. It can be deployed from the template using the command-line or through the {OpenShiftName} console.
+endif::[]
 
 .Prerequisites
 
@@ -15,9 +17,9 @@ On {OpenShiftName}, Kafka Mirror Maker is provided in the form of a template. It
 
 * Create a Kafka Mirror Maker cluster from the command-line:
 +
-[source,shell]
+[source,shell,subs="attributes+"]
 ----
-oc apply -f examples/kafka-mirror-maker/kafka-mirror-maker.yaml
+{cmdcli} apply -f examples/kafka-mirror-maker/kafka-mirror-maker.yaml
 ----
 
 .Additional resources

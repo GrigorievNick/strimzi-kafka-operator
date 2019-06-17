@@ -34,18 +34,22 @@ grep_check '[^[:alpha:]](do|is|are|won|have|ca|does|did|had|has|must)n'"'"'?t[^[
 grep_check '[^[:alpha:]]it'"'"'s[^[:alpha:]]' "Avoid it's contraction"
 grep_check '[^[:alpha:]]that'"'"'s[^[:alpha:]]' "Avoid that's contraction"
 grep_check '[^[:alpha:]]can not[^[:alpha:]]' "Use 'cannot' not 'can not'"
-grep_check '\<a {ProductPlatformName}' "The article should be 'an' {ProductPlatformName}"
-grep_check '\<a {ProductPlatformLongName}' "The article should be 'an' {ProductPlatformLongName}"
 
 # Asciidoc standards
 grep_check '[<][<][[:alnum:]_-]+,' "Internal links should be xref:doc_id[Section title], not <<doc_id,link text>>"
 grep_check '[[]id=(["'"'"'])[[:alnum:]_-]+(?!-[{]context[}])\1' "[id=...] should end with -{context}" "-i -P -r -n"
 
 # leveloffset=+
-grep_check 'leveloffset+=[0-9]+'  "It should be leveloffset=+... not +="
+grep_check 'leveloffset+=[0-9]+'  "It should be 'leveloffset=+...' not '+='"
 
 # include: should be include::
-grep_check 'include:[^:[ ]+[[]'  "It should be include::...[] (two colons) not include:...[]"
+grep_check 'include:[^:[ ]+[[]'  "It should be 'include::...[]' (two colons) not 'include:...[]'"
+
+# The {ProductPlatformName} might begin with a vowel
+grep_check '(^|[^[:alnum:]])a[[:space:]]+{ProductPlatformName}' "Use '{aProductPlatformName}' rather than 'a {ProductPlatformName}'" '-E -r -n'
+grep_check '(^|[^[:alnum:]])A[[:space:]]+{ProductPlatformName}' "Use '{AProductPlatformName}' rather than 'a {ProductPlatformName}'" '-E -r -n'
+grep_check '(^|[^[:alnum:]])a[[:space:]]+{Namespace}' "Use '{aNamespace}' rather than 'a {Namespace}'" '-E -r -n'
+grep_check '(^|[^[:alnum:]])A[[:space:]]+{Namespace}' "Use '{ANamespace}' rather than 'a {Namespace}'" '-E -r -n'
 
 if [ $fatal -gt 0 ]; then
   echo "ERROR: ${fatal} docs problems found."

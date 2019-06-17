@@ -7,7 +7,7 @@
 
 .Prerequisites
 
-* An {ProductPlatformName} cluster
+* {AProductPlatformName} cluster
 * A running Cluster Operator
 
 .Procedure
@@ -22,23 +22,18 @@ On {KubernetesName} this can be done using `kubectl taint`:
 kubectl taint node _your-node_ dedicated=Kafka:NoSchedule
 +
 endif::Kubernetes[]
+ifdef::OpenShift[]
 On {OpenShiftName} this can be done using `oc adm taint`:
 +
 [source,shell,subs=+quotes]
 oc adm taint node _your-node_ dedicated=Kafka:NoSchedule
 +
+endif::OpenShift[]
 . Additionally, add a label to the selected nodes as well.
 +
-ifdef::Kubernetes[]
-On {KubernetesName} this can be done using `kubectl label`:
-[source,shell,subs=+quotes]
-kubectl label node _your-node_ dedicated=Kafka
-+
-endif::Kubernetes[]
-On {OpenShiftName} this can be done using `oc label`:
-+
-[source,shell,subs=+quotes]
-oc label node _your-node_ dedicated=Kafka
+This can be done using `{cmdcli} label`:
+[source,shell,subs="+quotes,attributes+"]
+{cmdcli} label node _your-node_ dedicated=Kafka
 +
 . Edit the `affinity` and `tolerations` properties in the resource specifying the cluster deployment.
 For example:
@@ -73,13 +68,6 @@ spec:
 
 . Create or update the resource.
 +
-ifdef::Kubernetes[]
-On {KubernetesName} this can be done using `kubectl apply`:
-[source,shell,subs=+quotes]
-kubectl apply -f _your-file_
-+
-endif::Kubernetes[]
-On {OpenShiftName} this can be done using `oc apply`:
-+
-[source,shell,subs=+quotes]
-oc apply -f _your-file_
+This can be done using `{cmdcli} apply`:
+[source,shell,subs="+quotes,attributes+"]
+{cmdcli} apply -f _your-file_

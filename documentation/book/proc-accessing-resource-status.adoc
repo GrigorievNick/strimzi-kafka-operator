@@ -9,7 +9,7 @@ This procedure describes how to find the status of a custom resource.
 
 .Prerequisites
 
-* An {ProductPlatformName} cluster
+* {AProductPlatformName} cluster
 * A running Cluster Operator
 
 .Procedure

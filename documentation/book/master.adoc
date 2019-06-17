@@ -1,5 +1,7 @@
 include::common/version-dependent-attrs.adoc[]
 include::common/attributes.adoc[]
+include::common/attributes-{platform}.adoc[]
+
 
 :context: str
 

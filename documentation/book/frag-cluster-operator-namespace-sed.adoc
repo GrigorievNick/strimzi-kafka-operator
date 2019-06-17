@@ -1,13 +1,9 @@
 On Linux, use:
 +
-[source, subs="+quotes"]
-----
-sed -i 's/namespace: .\*/namespace: _my-namespace_/' install/cluster-operator/*RoleBinding*.yaml
-----
+[source, subs="+quotes,attributes+"]
+sed -i 's/namespace: .\*/namespace: _my-{namespace}_/' install/cluster-operator/*RoleBinding*.yaml
 +
 On MacOS, use:
 +
-[source, subs="+quotes"]
-----
-sed -i '' 's/namespace: .\*/namespace: _my-namespace_/' install/cluster-operator/*RoleBinding*.yaml
-----
+[source, subs="+quotes,attributes+"]
+sed -i '' 's/namespace: .\*/namespace: _my-{namespace}_/' install/cluster-operator/*RoleBinding*.yaml

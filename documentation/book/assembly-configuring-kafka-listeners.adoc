@@ -25,7 +25,9 @@ include::con-kafka-listeners.adoc[leveloffset=+1]
 
 include::proc-configuring-kafka-listeners.adoc[leveloffset=+1]
 
+ifdef::OpenShift[]
 include::proc-accessing-kafka-using-routes.adoc[leveloffset=+1]
+endif::[]
 
 include::proc-accessing-kafka-using-loadbalancers.adoc[leveloffset=+1]
 

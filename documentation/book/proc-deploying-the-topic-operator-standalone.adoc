@@ -23,31 +23,16 @@ For instance, it can operate _with_ any Kafka cluster, not necessarily one deplo
 
 . Deploy the Topic Operator.
 +
-ifdef::Kubernetes[]
-On {KubernetesName} this can be done using `kubectl apply`:
+This can be done using `{cmdcli} apply`:
 +
-[source,shell]
-kubectl apply -f install/topic-operator
-+
-endif::Kubernetes[]
-On {OpenShiftName} this can be done using `oc apply`:
-+
-[source,shell]
-oc apply -f install/topic-operator
+[source,shell,subs="attributes+"]
+{cmdcli} apply -f install/topic-operator
 
 . Verify that the Topic Operator has been deployed successfully.
-ifdef::Kubernetes[]
+This can be done using `{cmdcli} describe`:
 +
-On {KubernetesName} this can be done using `kubectl describe`:
-+
-[source,shell]
-kubectl describe deployment strimzi-topic-operator
-+
-endif::Kubernetes[]
-On {OpenShiftName} this can be done using `oc describe`:
-+
-[source,shell]
-oc describe deployment strimzi-topic-operator
+[source,shell,subs="attributes+"]
+{cmdcli} describe deployment strimzi-topic-operator
 +
 The Topic Operator is deployed once the `Replicas:` entry shows `1 available`.
 +

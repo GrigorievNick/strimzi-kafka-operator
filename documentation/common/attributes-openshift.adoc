@@ -1,0 +1,34 @@
+// :namespace: controls the CLI command
+:cmdcli: oc
+// :namespace: controls the word used for namespace in
+:namespace: project
+
+// Name and version placeholders
+:ProductLongName: Strimzi
+:ProductName: Strimzi
+:ContextProduct: strimzi
+:OpenShiftName: OpenShift
+:OpenShiftLongName: OpenShift Origin
+:OpenShiftVersion: 3.9 and later
+:KubernetesVersion: 1.9 and later
+:KubernetesName: Kubernetes
+:KubernetesLongName: Kubernetes
+:ProductPlatformName: {OpenShiftName}
+:ProductPlatformLongName: {OpenShiftLongName}
+:AProductPlatformName: An {OpenShiftName}
+:_aProductPlatformName: an {OpenShiftName}
+:PlatformNameNamespace: {OpenShiftName} project
+:PlatformNameNamespaces: {OpenShiftName} projects
+:_aPlatformNameNamespace: {OpenShiftName} project
+:APlatformNameNamespace: An {OpenShiftName} project
+
+// Section enablers
+//:Kubernetes:
+:OpenShift:
+:Helm:
+:OperatorHubio:
+:StrimziUpgrades:
+:InstallationAppendix:
+:MetricsAppendix:
+:Downloading:
+:SecurityImg:

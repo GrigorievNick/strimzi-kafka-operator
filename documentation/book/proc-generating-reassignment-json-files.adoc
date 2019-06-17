@@ -58,7 +58,8 @@ cat _topics.json_ | kubectl exec -c kafka _<BrokerPod>_ -i -- \
   /bin/bash -c \
   'cat > /tmp/topics.json'  
 ----
-endif::Kubernetes[]
+endif::[]
+ifdef::OpenShift[]
 +
 On {OpenShiftName}:
 +
@@ -67,6 +68,7 @@ On {OpenShiftName}:
 cat _topics.json_ | oc rsh -c kafka _<BrokerPod>_ /bin/bash -c \
   'cat > /tmp/topics.json'
 ----
+endif::[]
 
 . Use the `kafka-reassign-partitions.sh`` command to generate the reassignment JSON.
 ifdef::Kubernetes[]
@@ -82,6 +84,7 @@ kubectl exec _<BrokerPod>_ -c kafka -it -- \
   --generate
 ----
 endif::Kubernetes[]
+ifdef::OpenShift[]
 +
 On {OpenShiftName}:
 +
@@ -93,9 +96,21 @@ oc rsh -c kafka _<BrokerPod>_ \
   --broker-list _<BrokerList>_ \
   --generate
 ----
+endif::[]
 +
 For example, to move all the partitions of `topic-a` and `topic-b` to brokers `4` and `7`
 +
+ifdef::Kubernetes[]
+[source,shell]
+----
+kubectl exec _<BrokerPod>_ -c kafka -it -- \
+  bin/kafka-reassign-partitions.sh --zookeeper localhost:2181 \
+  --topics-to-move-json-file /tmp/topics.json \
+  --broker-list 4,7 \
+  --generate
+----
+endif::[]
+ifndef::Kubernetes[]
 [source,shell]
 ----
 oc rsh -c kafka _<BrokerPod>_ \
@@ -104,4 +119,4 @@ oc rsh -c kafka _<BrokerPod>_ \
   --broker-list 4,7 \
   --generate
 ----
-
+endif::[]

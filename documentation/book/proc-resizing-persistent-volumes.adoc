@@ -13,7 +13,7 @@ Decreasing the size of persistent volumes is not currently supported in {Product
 
 .Prerequisites
 
-* An {ProductPlatformName} cluster with support for volume resizing.
+* {AProductPlatformName} cluster with support for volume resizing.
 * The Cluster Operator is running.
 * A Kafka cluster using persistent volumes created using a storage class that supports volume expansion.
 
@@ -46,16 +46,9 @@ spec:
 +
 . Create or update the resource.
 +
-ifdef::Kubernetes[]
-On {KubernetesName}, use `kubectl apply`:
-[source,shell,subs=+quotes]
-kubectl apply -f _your-file_
-+
-endif::Kubernetes[]
-On {OpenShiftName}, use `oc apply`:
-+
-[source,shell,subs=+quotes]
-oc apply -f _your-file_
+Use `{cmdcli} apply`:
+[source,shell,subs="+quotes,attributes+"]
+{cmdcli} apply -f _your-file_
 +
 {ProductPlatformName} increases the capacity of the selected persistent volumes in response to a request from the Cluster Operator.
 When the resizing is complete, the Cluster Operator restarts all pods that use the resized persistent volumes.
