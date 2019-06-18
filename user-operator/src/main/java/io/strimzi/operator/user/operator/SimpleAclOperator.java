@@ -19,7 +19,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scala.Tuple2;
 import scala.collection.Iterator;
-import scala.collection.JavaConversions;
+import scala.collection.JavaConverters;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -92,7 +92,7 @@ public class SimpleAclOperator {
                 }
             },
             false,
-            fut.completer()
+            fut
         );
         return fut;
     }
@@ -104,7 +104,7 @@ public class SimpleAclOperator {
         try {
             HashMap<Resource, Set<Acl>> map = getResourceAclsMap(username, desired);
             for (Map.Entry<Resource, Set<Acl>> entry: map.entrySet()) {
-                scala.collection.mutable.Set add = JavaConversions.asScalaSet(entry.getValue());
+                scala.collection.mutable.Set<Acl> add = JavaConverters.asScalaSet(entry.getValue());
                 authorizer.addAcls(add.toSet(), entry.getKey());
             }
         } catch (Exception e) {
@@ -132,7 +132,7 @@ public class SimpleAclOperator {
         updates.add(internalDelete(username, toBeDeleted));
         updates.add(internalCreate(username, toBeAdded));
 
-        Future fut = Future.future();
+        Future<ReconcileResult<Set<SimpleAclRule>>> fut = Future.future();
 
         CompositeFuture.all(updates).setHandler(res -> {
             if (res.succeeded())    {
@@ -168,7 +168,7 @@ public class SimpleAclOperator {
         try {
             HashMap<Resource, Set<Acl>> map =  getResourceAclsMap(username, current);
             for (Map.Entry<Resource, Set<Acl>> entry: map.entrySet()) {
-                scala.collection.mutable.Set remove = JavaConversions.asScalaSet(entry.getValue());
+                scala.collection.mutable.Set<Acl> remove = JavaConverters.asScalaSet(entry.getValue());
                 authorizer.removeAcls(remove.toSet(), entry.getKey());
             }
         } catch (Exception e) {
