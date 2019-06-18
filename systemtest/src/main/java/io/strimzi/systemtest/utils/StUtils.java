@@ -406,6 +406,13 @@ public class StUtils {
             () -> kubeClient().getClient().services().inNamespace(kubeClient().getNamespace()).withName(serviceName).get().getSpec().getExternalIPs().size() > 0);
     }
 
+    public static void waitForNodePortService(String serviceName) {
+        LOGGER.info("Waiting when Service {} in namespace {} is ready", serviceName, kubeClient().getNamespace());
+
+        TestUtils.waitFor("service " + serviceName, Constants.POLL_INTERVAL_FOR_RESOURCE_READINESS, Constants.TIMEOUT_FOR_RESOURCE_READINESS,
+            () -> kubeClient().getClient().services().inNamespace(kubeClient().getNamespace()).withName(serviceName).get().getSpec().getPorts().get(0).getNodePort() != null);
+    }
+
     private static String changeOrgAndTag(String image, String registry, String newOrg, String newTag) {
         image = image.replaceFirst("^strimzi/", registry + "/" + newOrg + "/");
         Matcher m = KAFKA_COMPONENT_PATTERN.matcher(image);
