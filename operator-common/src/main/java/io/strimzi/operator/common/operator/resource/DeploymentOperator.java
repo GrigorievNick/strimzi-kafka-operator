@@ -39,7 +39,7 @@ public class DeploymentOperator extends AbstractScalableResourceOperator<Kuberne
 
     @Override
     protected MixedOperation<Deployment, DeploymentList, DoneableDeployment, ScalableResource<Deployment, DoneableDeployment>> operation() {
-        return client.extensions().deployments();
+        return client.apps().deployments();
     }
 
     @Override
