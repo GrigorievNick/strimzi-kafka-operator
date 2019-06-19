@@ -86,7 +86,7 @@ public class StUtils {
     public static boolean ssHasRolled(String name, Map<String, String> snapshot) {
         boolean log = true;
         if (log) {
-            LOGGER.debug("Existing snapshot: {}", new TreeMap(snapshot));
+            LOGGER.debug("Existing snapshot: {}", new TreeMap<>(snapshot));
         }
         LabelSelector selector = null;
         int times = 60;
@@ -106,12 +106,12 @@ public class StUtils {
 
         Map<String, String> map = podSnapshot(selector);
         if (log) {
-            LOGGER.debug("Current snapshot: {}", new TreeMap(map));
+            LOGGER.debug("Current snapshot: {}", new TreeMap<>(map));
         }
         // rolled when all the pods in snapshot have a different version in map
         map.keySet().retainAll(snapshot.keySet());
         if (log) {
-            LOGGER.debug("Pods in common: {}", new TreeMap(map));
+            LOGGER.debug("Pods in common: {}", new TreeMap<>(map));
         }
         for (Map.Entry<String, String> e : map.entrySet()) {
             String currentResourceVersion = e.getValue();
@@ -137,9 +137,9 @@ public class StUtils {
      * @return true when the pods for Deployment are recreated
      */
     public static boolean depHasRolled(String name, Map<String, String> snapshot) {
-        LOGGER.debug("Existing snapshot: {}", new TreeMap(snapshot));
+        LOGGER.debug("Existing snapshot: {}", new TreeMap<>(snapshot));
         Map<String, String> map = podSnapshot(kubeClient().getDeployment(name).getSpec().getSelector());
-        LOGGER.debug("Current  snapshot: {}", new TreeMap(map));
+        LOGGER.debug("Current  snapshot: {}", new TreeMap<>(map));
         int current = map.size();
         map.keySet().retainAll(snapshot.keySet());
         if (current == snapshot.size() && map.isEmpty()) {
