@@ -126,8 +126,8 @@ To deploy these resources, run the following commands:
 {cmdcli} apply -f prometheus.yaml
 
 ifdef::OpenShift[]
-NOTE: On {OpenShiftName} this you will need to have suitable privileges to do this.
-On {Minishift} you can do this by logging in with cluster administrator privileges by executing `oc login -u system:admin` before the `{cmdcli} apply` commands given above.
+NOTE: On {OpenShiftName} you need suitable privileges to do this.
+On {Minishift}, log in with cluster administrator privileges by executing `oc login -u system:admin` before using the `{cmdcli} apply` commands.
 endif::[]
 
 Prometheus also provides an alerting system through the link:https://prometheus.io/docs/alerting/alertmanager/[Alertmanager^] component.
@@ -156,7 +156,7 @@ No alerting rules are defined.
 
 The Grafana Prometheus data source, and the above dashboards, can be set up in Grafana by following these steps.
 
-NOTE: For accessing the dashboard, you can use the `port-forward` command for forwarding traffic from the Grafana pod to the host. For example, you can access the Grafana UI by running `{cmdcli} port-forward grafana-1-fbl7s 3000:3000` and then pointing a browser to `http://localhost:3000`.
+NOTE: For accessing the dashboard, use the `port-forward` command for forwarding traffic from the Grafana pod to the host. For example, access the Grafana UI by running `{cmdcli} port-forward grafana-1-fbl7s 3000:3000` and then pointing a browser to `http://localhost:3000`.
 
 . Access to the Grafana UI using `admin/admin` credentials.  On the following view you can choose to skip resetting the admin password, or set it to a password you desire.
 +

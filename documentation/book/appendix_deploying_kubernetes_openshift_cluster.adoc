@@ -11,7 +11,7 @@ This section provides basic guidance on how to use
 ifndef::OpenShift[it]
 ifdef::OpenShift[them]
 .
-More details are provided on the websites of the tools themselves.
+For more information on the tools, refer to the documentation available online.
 
 ifdef::Kubernetes[]
 === {KubernetesName}

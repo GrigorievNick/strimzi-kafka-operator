@@ -10,7 +10,7 @@
 = Getting started with {ProductName}
 
 {ProductName} works on all types of clusters, from public and private clouds to local deployments intended for development.
-This guide expects that {_aProductPlatformName} cluster is available and the
+This guide assumes that {_aProductPlatformName} cluster is available and the
 ifdef::Kubernetes[`kubectl`]
 ifdef::Kubernetes+OpenShift[ and ]
 ifdef::OpenShift[`oc`]
