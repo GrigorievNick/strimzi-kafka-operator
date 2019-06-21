@@ -55,7 +55,7 @@ spec:
 
 . Extract the public certificate of the broker certificate authority
 +
-[source,shell]
+[source,shell,subs="+quotes,attributes+"]
 {cmdcli} get secret _cluster-name_-cluster-ca-cert -o jsonpath='{.data.ca\.crt}' | base64 -d > ca.crt
 +
 . Use the extracted certificate in your Kafka client to configure the TLS connection.
